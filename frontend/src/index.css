@@ -43,6 +43,13 @@
   box-shadow: inset 0 0 10px rgba(0,0,0,0.1); /* Subtle inner shadow for paper feel */
 }
 
+/* Specific styling for the placeholder to ensure it's not visible */
+.page[style*="visibility: hidden"], 
+.page:first-child {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 .page-content {
   width: 100%;
   height: 100%;

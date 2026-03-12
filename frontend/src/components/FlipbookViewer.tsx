@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { PageFlip } from 'page-flip';
-import ThumbnailsStrip from './ThumbnailsStrip';
 import '../index.css';
 
 interface FlipbookViewerProps {
@@ -37,7 +36,6 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
     fetchMetadata();
   }, [documentId]);
 
-  // Handle initialization after metadata is loaded and images are in DOM
   useEffect(() => {
     if (metadata && flipbookRef.current && !pageFlip.current) {
       const isMobile = window.innerWidth < 768;
@@ -50,17 +48,17 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         maxWidth: 1000,
         minHeight: 420,
         maxHeight: 1350,
-        maxShadowOpacity: 0.5, // Enhanced shadows for 3D depth
-        showCover: true, // Keep single-page cover view
+        maxShadowOpacity: 0.5,
+        showCover: false, // Set to false to allow soft flip on all pages
         mobileScrollSupport: true,
         usePortrait: isMobile,
-        flippingTime: 1000, // Slightly slower for smoother curving effect
-        showPageCorners: false, // Disable hover corner curling
+        flippingTime: 1000,
+        showPageCorners: false,
         disableCanvasContextMenu: true,
         clickEventForward: true,
         useMouseEvents: true,
         swipeDistance: 30,
-        drawShadow: true, // Enable shadows during flip
+        drawShadow: true,
         startPage: 0,
       };
 
@@ -74,6 +72,14 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
           if (pageElements.length > 0) {
             pageFlip.current.loadFromHTML(pageElements);
             setIsReady(true);
+            pageFlip.current.turnToPage(1);
+
+            // Prevent flipping back to page 0
+            pageFlip.current.on('flip', (e: any) => {
+              if (e.data === 0) {
+                pageFlip.current.turnToPage(1);
+              }
+            });
           }
         } catch (err) {
           console.error('Failed to initialize PageFlip:', err);
@@ -92,8 +98,8 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
 
   const handleNext = () => pageFlip.current?.flipNext();
   const handlePrev = () => pageFlip.current?.flipPrev();
-  const handleFirst = () => pageFlip.current?.flip(0);
-  const handleLast = () => pageFlip.current?.flip((metadata?.page_count || 1) - 1);
+  const handleFirst = () => pageFlip.current?.turnToPage(1); // Jump to cover
+  const handleLast = () => pageFlip.current?.flip(metadata ? metadata.page_count : 1);
 
   const toggleZoom = () => setZoom(prev => (prev === 1 ? 1.5 : 1));
 
@@ -121,6 +127,9 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         {!isReady && <div className="loading-overlay">Preparing your book...</div>}
         
         <div className="container" ref={flipbookRef}>
+          {/* Placeholder page 0 to force single-page cover view */}
+          <div className="page" data-density="hard" style={{ backgroundColor: 'transparent' }}></div>
+          
           {metadata.pages.map((url, index) => (
             <div className="page" key={index} data-density="soft">
               <div className="page-content">
