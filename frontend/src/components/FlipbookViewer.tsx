@@ -78,7 +78,7 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         minHeight: 420,
         maxHeight: 2000,
         maxShadowOpacity: 0.5,
-        showCover: true, /* Always start with cover mode as requested */
+        showCover: false, /* Using invisible page workaround instead */
         mobileScrollSupport: true,
         usePortrait: isMobile,
         flippingTime: 1000,
@@ -102,7 +102,7 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
             pageFlip.current.loadFromHTML(pageElements);
             setIsReady(true);
             
-            // Always start at the cover (Page 1 / Index 0)
+            // Start at the first "real" page (index 0 is the invisible left page)
             pageFlip.current.turnToPage(0);
           }
         } catch (err) {
@@ -125,9 +125,10 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
   const handleFirst = () => pageFlip.current?.turnToPage(0);
   const handleLast = () => {
     if (!metadata) return;
-    // In cover mode, if page_count is even, the last page is on the left.
-    // If odd, it's on the right.
-    pageFlip.current?.turnToPage(metadata.page_count - 1);
+    // With invisible page at start:
+    // P1 (Right) is index 0-1 spread
+    // Last real page index ismetadata.page_count
+    pageFlip.current?.turnToPage(metadata.page_count);
   };
 
   const toggleZoom = () => setZoom(prev => (prev === 1 ? 1.5 : 1));
@@ -151,13 +152,18 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
           transform: `scale(${zoom})`, 
           transformOrigin: 'top center',
           visibility: isReady ? 'visible' : 'hidden',
-          minHeight: `${dimensions.height + 120}px`, /* Account for padding */
+          minHeight: `${dimensions.height + 120}px`,
           width: '100%'
         }}
       >
         {!isReady && <div className="loading-overlay">Preparing your book...</div>}
         
         <div className="container" ref={flipbookRef}>
+          {/* Workaround: Invisible Left Page to allow Page 1 (Cover) to flip smoothly */}
+          <div className="page page-transparent" data-density="soft" style={{ width: dimensions.width, height: dimensions.height }}>
+            <div className="page-content"></div>
+          </div>
+
           {metadata.pages.map((url, index) => (
             <div 
               className="page" 
@@ -177,6 +183,13 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
               </div>
             </div>
           ))}
+
+          {/* Workaround: Invisible Right Page if needed to balance the last page spread */}
+          {(metadata.page_count % 2 === 0) && (
+            <div className="page page-transparent" data-density="soft" style={{ width: dimensions.width, height: dimensions.height }}>
+              <div className="page-content"></div>
+            </div>
+          )}
         </div>
       </div>
     </div>
