@@ -2,7 +2,7 @@
 
 ## Decision: PDF Conversion Library
 - **Decision**: `pdf2image` (using Poppler).
-- **Rationale**: Poppler is highly mature and renders PDFs accurately. Converting pages to 150-200 DPI JPEG/PNG images is the most reliable way to serve content to a web-based viewer.
+- **Rationale**: Poppler is highly mature and renders PDFs accurately. Converting pages to 300 DPI JPEG/PNG images is the most reliable way to serve content to a web-based viewer.
 - **Alternatives Considered**: `PyMuPDF` (faster but AGPL license), `PDF.js` (client-side rendering, might be heavy for low-end devices).
 
 ## Decision: Flipbook Engine

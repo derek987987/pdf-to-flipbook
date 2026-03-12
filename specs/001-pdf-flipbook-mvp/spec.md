@@ -12,7 +12,7 @@
 - Q: Text Search Capability → A: No (Visual search only via thumbnails/navigation)
 - Q: Data Purge Verification → A: Best-effort periodic cleanup (e.g., hourly cron job)
 - Q: Mobile Responsive Viewer Behavior → A: Yes, MUST switch to single-page view on narrow screens
-- Q: Document Conversion Quality → A: Standard High Quality (150-200 DPI)
+- Q: Document Conversion Quality → A: Standard High Quality (300 DPI)
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -72,7 +72,7 @@ As a user, I want to have basic navigation controls (first, last, zoom, thumbnai
 ### Functional Requirements
 
 - **FR-001**: System MUST provide a file upload interface restricted to `.pdf` files. The system MUST enforce a maximum file size of 50MB and a maximum page count of 200 pages per document.
-- **FR-002**: System MUST automatically convert the uploaded PDF into a web-compatible image format (e.g., JPEG/PNG) at a minimum resolution of 150 DPI to ensure text readability in the flipbook viewer.
+- **FR-002**: System MUST automatically convert the uploaded PDF into a web-compatible image format (e.g., JPEG/PNG) at a minimum resolution of 300 DPI to ensure text readability in the flipbook viewer.
 - **FR-003**: Flipbook viewer MUST support realistic page-turn animations.
 - **FR-004**: System MUST support double-page spreads in landscape mode.
 - **FR-005**: System MUST provide navigation controls (Next, Previous, First, Last).

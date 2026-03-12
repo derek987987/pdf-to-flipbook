@@ -22,8 +22,8 @@ def process_pdf_conversion(document_id: str, SessionLocal: sessionmaker):
         os.makedirs(output_dir, exist_ok=True)
 
         # Convert PDF to Images
-        # Target resolution 150 DPI per FR-002
-        images = pdf2image.convert_from_path(doc.pdf_path, dpi=200)
+        # Target resolution 300 DPI for high-quality text readability
+        images = pdf2image.convert_from_path(doc.pdf_path, dpi=300)
         
         doc.page_count = len(images)
         
@@ -32,7 +32,8 @@ def process_pdf_conversion(document_id: str, SessionLocal: sessionmaker):
             image_filename = f"page_{page_num}.jpg"
             image_path = os.path.join(output_dir, image_filename)
             
-            image.save(image_path, "JPEG")
+            # Save with high quality (95) to preserve detail
+            image.save(image_path, "JPEG", quality=95, optimize=True)
             
             # Create page record
             page = FlipbookPage(
