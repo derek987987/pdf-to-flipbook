@@ -3,7 +3,7 @@
 A web application that converts PDF files into interactive flipbooks.
 
 ## Features
-- **PDF Upload**: Upload PDF files up to 50MB and 200 pages.
+- **PDF Upload**: Upload PDF files up to 500MB and 200 pages.
 - **Interactive Reading**: Realistic 3D page-turn animations.
 - **Navigation Controls**: First, Last, Prev, Next, Zoom, and Thumbnails.
 - **Anonymous Viewing**: No account required.

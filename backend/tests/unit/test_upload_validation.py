@@ -6,9 +6,9 @@ class MockFile:
         self.size = size
 
 def test_validate_pdf_size_too_large():
-    # 51 MB
-    mock_file = MockFile(51 * 1024 * 1024)
-    with pytest.raises(ValueError, match="File size exceeds 50MB limit"):
+    # 501 MB
+    mock_file = MockFile(501 * 1024 * 1024)
+    with pytest.raises(ValueError, match="File size exceeds 500MB limit"):
         validate_pdf(mock_file, page_count=10)
 
 def test_validate_pdf_pages_too_many():

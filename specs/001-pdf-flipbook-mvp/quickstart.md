@@ -22,7 +22,7 @@
 
 ## Validation Steps
 1. Open browser to `http://localhost:5173`.
-2. Select a PDF file < 50MB.
+2. Select a PDF file < 500MB.
 3. Observe upload and conversion progress.
 4. Interact with the flipbook (flip pages, navigate).
 5. Verify 24h accessibility in an Incognito window.

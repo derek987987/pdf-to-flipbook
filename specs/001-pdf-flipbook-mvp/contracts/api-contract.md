@@ -5,7 +5,7 @@
 ### POST /api/v1/upload
 Uploads a PDF file.
 - **Request**: `multipart/form-data`
-  - `file`: PDF file (Max 50MB/200 pages)
+  - `file`: PDF file (Max 500MB/200 pages)
 - **Response**: `201 Created`
   - Body: `{"id": "UUID", "status": "PENDING"}`
 - **Errors**:

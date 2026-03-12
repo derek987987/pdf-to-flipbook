@@ -1,4 +1,4 @@
-MAX_SIZE_MB = 50
+MAX_SIZE_MB = 500
 MAX_PAGES = 200
 
 def validate_pdf(file, page_count: int):

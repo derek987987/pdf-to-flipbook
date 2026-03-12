@@ -15,7 +15,7 @@ Implement a web application that converts uploaded PDF files into interactive fl
 **Target Platform**: Modern Web Browsers, Mobile-responsive (Single-page view)  
 **Project Type**: web-service  
 **Performance Goals**: < 30s conversion for 10MB PDF, 60 FPS animations  
-**Constraints**: 50MB/200-page upload limit, 24-hour retention  
+**Constraints**: 500MB/200-page upload limit, 24-hour retention  
 **Scale/Scope**: MVP (Anonymous uploads)
 
 ## Constitution Check

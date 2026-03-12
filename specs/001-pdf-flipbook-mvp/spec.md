@@ -8,7 +8,7 @@
 ## Clarifications
 
 ### Session 2026-03-12
-- Q: Maximum Document Size and Page Count → A: Max 50MB and 200 pages
+- Q: Maximum Document Size and Page Count → A: Max 500MB and 200 pages
 - Q: Text Search Capability → A: No (Visual search only via thumbnails/navigation)
 - Q: Data Purge Verification → A: Best-effort periodic cleanup (e.g., hourly cron job)
 - Q: Mobile Responsive Viewer Behavior → A: Yes, MUST switch to single-page view on narrow screens
@@ -63,7 +63,7 @@ As a user, I want to have basic navigation controls (first, last, zoom, thumbnai
 
 ### Edge Cases
 
-- **Large PDF Files**: What happens when a user uploads a PDF that is very large (exceeding 50MB or 200 pages)? The system MUST reject the upload with a clear message explaining the limits.
+- **Large PDF Files**: What happens when a user uploads a PDF that is very large (exceeding 500MB or 200 pages)? The system MUST reject the upload with a clear message explaining the limits.
 - **Corrupted PDF**: If a user uploads a corrupted or non-PDF file, the system MUST provide a clear error message and allow them to try again.
 - **Mobile Responsiveness**: How does the flipbook behave on a small screen? The system MUST automatically switch to a single-page view if the screen is too narrow (e.g., mobile devices) for a double-page spread.
 
@@ -71,7 +71,7 @@ As a user, I want to have basic navigation controls (first, last, zoom, thumbnai
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a file upload interface restricted to `.pdf` files. The system MUST enforce a maximum file size of 50MB and a maximum page count of 200 pages per document.
+- **FR-001**: System MUST provide a file upload interface restricted to `.pdf` files. The system MUST enforce a maximum file size of 500MB and a maximum page count of 200 pages per document.
 - **FR-002**: System MUST automatically convert the uploaded PDF into a web-compatible image format (e.g., JPEG/PNG) at a minimum resolution of 300 DPI to ensure text readability in the flipbook viewer.
 - **FR-003**: Flipbook viewer MUST support realistic page-turn animations.
 - **FR-004**: System MUST support double-page spreads in landscape mode.
