@@ -51,7 +51,7 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         minHeight: 420,
         maxHeight: 1350,
         maxShadowOpacity: 0.5, // Enhanced shadows for 3D depth
-        showCover: true,
+        showCover: false, // Enable soft flip for first page
         mobileScrollSupport: true,
         usePortrait: isMobile,
         flippingTime: 1000, // Slightly slower for smoother curving effect
