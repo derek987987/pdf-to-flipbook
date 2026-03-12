@@ -23,6 +23,8 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
   const flipbookRef = useRef<HTMLDivElement>(null);
   const pageFlip = useRef<any>(null);
 
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -38,31 +40,45 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
     fetchMetadata();
   }, [documentId]);
 
+  const updateDimensions = () => {
+    if (!metadata) return;
+    
+    const isMobile = window.innerWidth < 768;
+    const maxDisplayWidth = Math.min(window.innerWidth - 100, 1200);
+    const baseWidth = metadata.width || 550;
+    const baseHeight = metadata.height || 733;
+    
+    const scaleFactor = (maxDisplayWidth / 2) / baseWidth;
+    
+    const pageWidth = isMobile ? Math.min(window.innerWidth - 40, baseWidth) : baseWidth * scaleFactor;
+    const pageHeight = (pageWidth / baseWidth) * baseHeight;
+    
+    setDimensions({ 
+      width: Math.round(pageWidth), 
+      height: Math.round(pageHeight) 
+    });
+  };
+
   useEffect(() => {
-    if (metadata && flipbookRef.current && !pageFlip.current) {
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [metadata]);
+
+  useEffect(() => {
+    if (metadata && dimensions.width > 0 && flipbookRef.current && !pageFlip.current) {
       const isMobile = window.innerWidth < 768;
-      
-      // Calculate dynamic dimensions
-      // Use original aspect ratio but cap maximum width
-      const maxDisplayWidth = Math.min(window.innerWidth - 100, 1200);
-      const baseWidth = metadata.width || 550;
-      const baseHeight = metadata.height || 733;
-      
-      const scaleFactor = (maxDisplayWidth / 2) / baseWidth;
-      
-      const pageWidth = isMobile ? Math.min(window.innerWidth - 40, baseWidth) : baseWidth * scaleFactor;
-      const pageHeight = isMobile ? (pageWidth / baseWidth) * baseHeight : baseHeight * scaleFactor;
 
       const settings = {
-        width: Math.round(pageWidth),
-        height: Math.round(pageHeight),
+        width: dimensions.width,
+        height: dimensions.height,
         size: 'stretch',
         minWidth: 315,
         maxWidth: 1500,
         minHeight: 420,
         maxHeight: 2000,
         maxShadowOpacity: 0.5,
-        showCover: false,
+        showCover: true, /* Always start with cover mode as requested */
         mobileScrollSupport: true,
         usePortrait: isMobile,
         flippingTime: 1000,
@@ -85,13 +101,9 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
           if (pageElements.length > 0) {
             pageFlip.current.loadFromHTML(pageElements);
             setIsReady(true);
-            pageFlip.current.turnToPage(1);
-
-            pageFlip.current.on('flip', (e: any) => {
-              if (e.data === 0) {
-                pageFlip.current.turnToPage(1);
-              }
-            });
+            
+            // Always start at the cover (Page 1 / Index 0)
+            pageFlip.current.turnToPage(0);
           }
         } catch (err) {
           console.error('Failed to initialize PageFlip:', err);
@@ -106,12 +118,17 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         }
       };
     }
-  }, [metadata]);
+  }, [metadata, dimensions.width]);
 
   const handleNext = () => pageFlip.current?.flipNext();
   const handlePrev = () => pageFlip.current?.flipPrev();
-  const handleFirst = () => pageFlip.current?.turnToPage(1);
-  const handleLast = () => pageFlip.current?.flip(metadata ? metadata.page_count : 1);
+  const handleFirst = () => pageFlip.current?.turnToPage(0);
+  const handleLast = () => {
+    if (!metadata) return;
+    // In cover mode, if page_count is even, the last page is on the left.
+    // If odd, it's on the right.
+    pageFlip.current?.turnToPage(metadata.page_count - 1);
+  };
 
   const toggleZoom = () => setZoom(prev => (prev === 1 ? 1.5 : 1));
 
@@ -134,28 +151,28 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
           transform: `scale(${zoom})`, 
           transformOrigin: 'top center',
           visibility: isReady ? 'visible' : 'hidden',
-          minHeight: `${Math.round((metadata.height / metadata.width) * (isReady ? 550 : 550))}px`
+          minHeight: `${dimensions.height + 120}px`, /* Account for padding */
+          width: '100%'
         }}
       >
         {!isReady && <div className="loading-overlay">Preparing your book...</div>}
         
         <div className="container" ref={flipbookRef}>
-          <div className="page" data-density="hard" style={{ backgroundColor: 'transparent' }}></div>
-          
           {metadata.pages.map((url, index) => (
             <div 
               className="page" 
               key={index} 
               data-density="soft"
               style={{ 
-                width: `${Math.round(metadata.width * ((Math.min(window.innerWidth - 100, 1200) / 2) / metadata.width))}px`,
-                height: `${Math.round(metadata.height * ((Math.min(window.innerWidth - 100, 1200) / 2) / metadata.width))}px`
+                width: `${dimensions.width}px`,
+                height: `${dimensions.height}px`
               }}
             >
               <div className="page-content">
                 <img 
                   src={url} 
                   alt={`Page ${index + 1}`} 
+                  loading="lazy"
                 />
               </div>
             </div>
