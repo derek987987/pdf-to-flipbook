@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from .database import engine, Base
+# Import models to ensure they are registered with Base.metadata
+from .models import document
 from .api import upload, status, viewer
 
 # Initialize database
