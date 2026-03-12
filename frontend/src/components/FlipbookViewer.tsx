@@ -50,19 +50,20 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         maxWidth: 1000,
         minHeight: 420,
         maxHeight: 1350,
-        maxShadowOpacity: 0.5,
+        maxShadowOpacity: 0.5, // Enhanced shadows for 3D depth
         showCover: true,
         mobileScrollSupport: true,
         usePortrait: isMobile,
-        flippingTime: 1000,
+        flippingTime: 1000, // Slightly slower for smoother curving effect
         showPageCorners: true,
         disableCanvasContextMenu: true,
         clickEventForward: true,
         useMouseEvents: true,
         swipeDistance: 30,
+        drawShadow: true, // Enable shadows during flip
+        startPage: 0,
       };
 
-      // Small timeout to ensure React has painted the .page divs to the DOM
       const timer = setTimeout(() => {
         try {
           if (!flipbookRef.current) return;
@@ -73,7 +74,6 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
           if (pageElements.length > 0) {
             pageFlip.current.loadFromHTML(pageElements);
             setIsReady(true);
-            console.log('Flipbook initialized with', pageElements.length, 'pages');
           }
         } catch (err) {
           console.error('Failed to initialize PageFlip:', err);
@@ -94,7 +94,6 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
   const handlePrev = () => pageFlip.current?.flipPrev();
   const handleFirst = () => pageFlip.current?.flip(0);
   const handleLast = () => pageFlip.current?.flip((metadata?.page_count || 1) - 1);
-  const handleJumpToPage = (index: number) => pageFlip.current?.flip(index);
 
   const toggleZoom = () => setZoom(prev => (prev === 1 ? 1.5 : 1));
 
@@ -116,30 +115,24 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         style={{ 
           transform: `scale(${zoom})`, 
           transformOrigin: 'top center',
-          visibility: isReady ? 'visible' : 'hidden' // Hide until library is ready
+          visibility: isReady ? 'visible' : 'hidden'
         }}
       >
         {!isReady && <div className="loading-overlay">Preparing your book...</div>}
         
         <div className="container" ref={flipbookRef}>
           {metadata.pages.map((url, index) => (
-            <div className="page" key={index} data-density="hard">
+            <div className="page" key={index} data-density="soft">
               <div className="page-content">
                 <img 
                   src={url} 
                   alt={`Page ${index + 1}`} 
-                  onLoad={() => console.log(`Loaded page ${index + 1}`)}
                 />
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      <ThumbnailsStrip 
-        pages={metadata.pages} 
-        onSelect={handleJumpToPage} 
-      />
     </div>
   );
 };

@@ -15,11 +15,10 @@
 }
 
 .flipbook-wrapper {
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
   margin: 20px auto;
-  background-color: #333;
+  background-color: transparent; /* Remove black background */
   min-height: 733px;
-  min-width: 550px; /* One page width */
+  min-width: 550px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,7 +30,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white;
+  color: #666;
   font-size: 1.2rem;
   z-index: 50;
 }
@@ -41,6 +40,7 @@
   width: 550px;
   height: 733px;
   overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1); /* Subtle inner shadow for paper feel */
 }
 
 .page-content {
@@ -49,12 +49,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: white;
 }
 
 .page-content img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* Ensure image fills the 3D page entirely */
 }
 
 /* Ensure the canvas is visible and handles events */
