@@ -55,7 +55,7 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         mobileScrollSupport: true,
         usePortrait: isMobile,
         flippingTime: 1000, // Slightly slower for smoother curving effect
-        showPageCorners: true,
+        showPageCorners: false, // Disable hover corner curling
         disableCanvasContextMenu: true,
         clickEventForward: true,
         useMouseEvents: true,
