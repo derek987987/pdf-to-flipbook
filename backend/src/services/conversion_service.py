@@ -27,6 +27,10 @@ def process_pdf_conversion(document_id: str, SessionLocal: sessionmaker):
         
         doc.page_count = len(images)
         
+        # Capture dimensions from the first page
+        if images:
+            doc.width, doc.height = images[0].size
+        
         for i, image in enumerate(images):
             page_num = i + 1
             image_filename = f"page_{page_num}.jpg"

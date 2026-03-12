@@ -19,6 +19,8 @@ class Document(Base):
     pdf_path = Column(String)
     status = Column(Enum(DocumentStatus))
     page_count = Column(Integer, default=0)
+    width = Column(Integer, default=0)
+    height = Column(Integer, default=0)
     uploaded_at = Column(DateTime, default=datetime.datetime.utcnow)
     expires_at = Column(DateTime)
     error_message = Column(String, nullable=True)

@@ -24,6 +24,8 @@ async def get_viewer_metadata(id: str, request: Request, db: Session = Depends(g
         "id": doc.id,
         "original_name": doc.original_name,
         "page_count": doc.page_count,
+        "width": doc.width,
+        "height": doc.height,
         "pages": page_urls
     }
 

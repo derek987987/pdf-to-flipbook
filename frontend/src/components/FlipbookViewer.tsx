@@ -10,6 +10,8 @@ interface ViewerMetadata {
   id: string;
   original_name: string;
   page_count: number;
+  width: number;
+  height: number;
   pages: string[];
 }
 
@@ -40,16 +42,27 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
     if (metadata && flipbookRef.current && !pageFlip.current) {
       const isMobile = window.innerWidth < 768;
       
+      // Calculate dynamic dimensions
+      // Use original aspect ratio but cap maximum width
+      const maxDisplayWidth = Math.min(window.innerWidth - 100, 1200);
+      const baseWidth = metadata.width || 550;
+      const baseHeight = metadata.height || 733;
+      
+      const scaleFactor = (maxDisplayWidth / 2) / baseWidth;
+      
+      const pageWidth = isMobile ? Math.min(window.innerWidth - 40, baseWidth) : baseWidth * scaleFactor;
+      const pageHeight = isMobile ? (pageWidth / baseWidth) * baseHeight : baseHeight * scaleFactor;
+
       const settings = {
-        width: 550,
-        height: 733,
+        width: Math.round(pageWidth),
+        height: Math.round(pageHeight),
         size: 'stretch',
         minWidth: 315,
-        maxWidth: 1000,
+        maxWidth: 1500,
         minHeight: 420,
-        maxHeight: 1350,
+        maxHeight: 2000,
         maxShadowOpacity: 0.5,
-        showCover: false, // Set to false to allow soft flip on all pages
+        showCover: false,
         mobileScrollSupport: true,
         usePortrait: isMobile,
         flippingTime: 1000,
@@ -74,7 +87,6 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
             setIsReady(true);
             pageFlip.current.turnToPage(1);
 
-            // Prevent flipping back to page 0
             pageFlip.current.on('flip', (e: any) => {
               if (e.data === 0) {
                 pageFlip.current.turnToPage(1);
@@ -98,7 +110,7 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
 
   const handleNext = () => pageFlip.current?.flipNext();
   const handlePrev = () => pageFlip.current?.flipPrev();
-  const handleFirst = () => pageFlip.current?.turnToPage(1); // Jump to cover
+  const handleFirst = () => pageFlip.current?.turnToPage(1);
   const handleLast = () => pageFlip.current?.flip(metadata ? metadata.page_count : 1);
 
   const toggleZoom = () => setZoom(prev => (prev === 1 ? 1.5 : 1));
@@ -121,17 +133,25 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
         style={{ 
           transform: `scale(${zoom})`, 
           transformOrigin: 'top center',
-          visibility: isReady ? 'visible' : 'hidden'
+          visibility: isReady ? 'visible' : 'hidden',
+          minHeight: `${Math.round((metadata.height / metadata.width) * (isReady ? 550 : 550))}px`
         }}
       >
         {!isReady && <div className="loading-overlay">Preparing your book...</div>}
         
         <div className="container" ref={flipbookRef}>
-          {/* Placeholder page 0 to force single-page cover view */}
           <div className="page" data-density="hard" style={{ backgroundColor: 'transparent' }}></div>
           
           {metadata.pages.map((url, index) => (
-            <div className="page" key={index} data-density="soft">
+            <div 
+              className="page" 
+              key={index} 
+              data-density="soft"
+              style={{ 
+                width: `${Math.round(metadata.width * ((Math.min(window.innerWidth - 100, 1200) / 2) / metadata.width))}px`,
+                height: `${Math.round(metadata.height * ((Math.min(window.innerWidth - 100, 1200) / 2) / metadata.width))}px`
+              }}
+            >
               <div className="page-content">
                 <img 
                   src={url} 
