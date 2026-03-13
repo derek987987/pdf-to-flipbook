@@ -44,14 +44,31 @@ const FlipbookViewer: React.FC<FlipbookViewerProps> = ({ documentId }) => {
     if (!metadata) return;
     
     const isMobile = window.innerWidth < 768;
-    const maxDisplayWidth = Math.min(window.innerWidth - 100, 1200);
+    // Available width for the whole book spread (2 pages)
+    const availableWidth = window.innerWidth - (isMobile ? 40 : 120);
+    // Available height for the book
+    const availableHeight = window.innerHeight - 300; // Room for header/controls
+    
     const baseWidth = metadata.width || 550;
     const baseHeight = metadata.height || 733;
+    const aspectRatio = baseHeight / baseWidth;
     
-    const scaleFactor = (maxDisplayWidth / 2) / baseWidth;
+    // Target single page width
+    let pageWidth = isMobile ? availableWidth : availableWidth / 2;
+    let pageHeight = pageWidth * aspectRatio;
     
-    const pageWidth = isMobile ? Math.min(window.innerWidth - 40, baseWidth) : baseWidth * scaleFactor;
-    const pageHeight = (pageWidth / baseWidth) * baseHeight;
+    // If height is too tall for screen, scale down based on height
+    if (pageHeight > availableHeight) {
+      pageHeight = availableHeight;
+      pageWidth = pageHeight / aspectRatio;
+    }
+
+    // Don't let it get too huge on giant monitors
+    const maxPageWidth = 800;
+    if (pageWidth > maxPageWidth) {
+      pageWidth = maxPageWidth;
+      pageHeight = pageWidth * aspectRatio;
+    }
     
     setDimensions({ 
       width: Math.round(pageWidth), 
